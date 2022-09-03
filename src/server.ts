@@ -1,9 +1,26 @@
 import express from "express";
+import { prisma } from "./prisma";
 
 const app = express();
 
-app.get("/", (req, res) => {
-  return res.send("Hello World");
+app.use(express.json())
+
+app.post("/user", async (req, res) => {
+  const { name, email, password } = req.body;
+
+  if (!name || !email || !password) return res.sendStatus(400)
+
+  const user = await prisma.user.create({
+    data: {
+        name,
+        email,
+        password
+    }
+  })
+
+  return res.status(201).json({
+    data: user
+  })
 });
 
-app.listen(333, () => console.log("RUNNING AT https://localhost:3333"));
+app.listen(3333, () => console.log("RUNNING AT https://localhost:3333"));
